@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{{ url_for('static', filename='assets/images/logo.png')}}" rel="icon"/>
+        <title>Online Hospital Management System</title>
+        <!-- Bootstrap -->
+        <link href="{{ url_for('static', filename='assets/css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='assets/css/style.css')}}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='assets/js/jquery.js')}}"></script>
+        <script type="{{ url_for('static', filename='assets/text/javascript')}}">
+
+        </script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            
+        <!--- Header Start -------->
+        <div class="row header">
+
+            <div class="col-md-10">
+                    <h2 >Hospital Mangement System</h2>
+            </div>
+
+            <div class="col-md-2 ">
+                <ul class="nav nav-pills ">
+                    <li class="dropdown dmenu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                            <ul class="dropdown-menu ">
+                                <li><a href="/profile">Change Password</a></li>
+                                <li role="separator" class="divider"></li>
+                                 <li><a href="logout">Logout</a></li>
+                            </ul>
+                     </li>
+                </ul>
+            </div>
+        </div>
+	<!--- Header Ends --------->
+       
+        <div class="row">
+		
+        <!----- Menu Area Start ------>
+        <div class="col-md-2 menucontent">
+          
+            <a href="#"><h1>Dashboard</h1></a>
+                
+                <ul class="nav nav-pills nav-stacked">
+                  <li role="presentation"><a href="/department">Department</a></li>
+                  <li role="presentation"><a href="/doctor">Doctors</a></li>
+                  <li role="presentation"><a href="/patients">Patients</a></li>
+                  <li role="presentation"><a href="/nurse">Nurse</a></li>
+                  <li role="presentation"><a href="/profile">Profile</a></li>
+                </ul>
+        </div>
+        <!---- Menu Ares Ends  -------->		
+<!---- Content Ares Start  -------->
+    <div class="col-md-10 maincontent" >
+<!----------------   Menu Tab Start   --------------->
+    <div class="panel panel-default contentinside">
+        <div class="panel-heading">Manage Nurse</div>
+        <!----------------   Panel body Start   --------------->
+        <div class="panel-body">
+            <ul class="nav nav-tabs doctor">
+                    <li role="presentation"><a href="#doctorlist">Nurse List</a></li>
+                    <li role="presentation"><a href="#" data-toggle="modal" data-target="#addnurse">Add Nurse</a></li>
+            </ul>
+
+
+                       {% with messages = get_flashed_messages() %}
+
+             {% if messages %}
+
+             {% for message in messages %}
+             <div class="alert alert-success alert-dismissable" role="alert">
+
+                <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+             {{message}}
+
+             </div>
+
+
+
+             {%endfor%}
+
+             {%endif%}
+
+             {%endwith%}
+
+
+
+
+        <!----------------   Display Nurse Data List Start  --------------->
+    
+        <div id="doctorlist" class="switchgroup">
+            <table class="table table-bordered table-hover">
+                <tr class="active">
+                        <td>Nurse ID</td>
+                        <td>Nurse Name</td>
+                        <td>Address</td>
+                        <td>Phone No.</td>
+                        <td>Options</td>
+                </tr>
+                  {% for ns in nus%}
+                    <tr>
+                            <td>{{ns.id}}</td>
+                            <td>{{ns.Nurse_Name}}</td>
+                            <td>{{ns.Address}}</td>
+                            <td>{{ns.Phon_No}}</td>
+                            <td>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal{{ns.id}}"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+                            <a  href="/nusdelete/{{ns.id}}" class="btn btn-danger" onclick="return confirm('Are You Sure To Delete ?')" ><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                            </td>
+                    </tr>
+
+                                           <!--------Edit Nurse form--------->
+                <div class="modal fade" id="myModal{{ns.id}}" tabindex="-1" role="dialog" aria-labelledby="ModalLabel">
+           <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+
+                        <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="ModalLabel">Edit Nurse Information</h4>
+                        </div>
+
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                <form class="form-horizontal" action="{{url_for('nsupdate')}}" method="post">
+
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Nurse Id:</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" name="nid" placeholder="Nurse ID" value="{{ns.id}}" readonly="readonly">
+                        </div>
+                    </div>
+                    <br> <br>
+
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                             <input type="text" class="form-control" name="name" placeholder="Name" value="{{ns.Nurse_Name}}">
+                        </div>
+                    </div>
+                    <br> <br>
+<!---                                   <div class="form-group">
+                      <label class="col-sm-2 control-label">Email</label>
+                      <div class="col-sm-10">
+                          <input type="Email" class="form-control" name="email" placeholder="Email">
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                          <input type="password" class="form-control" name="password" placeholder="Password">
+                        </div>
+                    </div>
+--->
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Address</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" name="address" placeholder="Address" value="{{ns.Address}}">
+                        </div>
+                    </div>
+                      <br> <br>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Phone</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" name="phone" placeholder="Phone No." value="{{ns.Phon_No}}">
+                        </div>
+                   </div>
+                     <br> <br>
+
+                    <div class="form-group">
+                          <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                          </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+                        </div>
+               </div>
+        </div>
+
+
+                {%endfor%}
+                    
+            </table>
+        </div>
+        <!----------------   Display Nurse Data List Ends  --------------->
+
+        <!----------------   Add Nurse Start   --------------->
+       <div class="modal fade" id="addnurse" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+           <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+
+                        <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Add Nurse Information</h4>
+                        </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                <form class="form-horizontal" action="{{url_for('nusadd')}}" method="post">
+                    
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Nurse Id:</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" name="nid" placeholder="Nurse ID" readonly="readonly">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                             <input type="text" class="form-control" name="name" placeholder="Name" required="1">
+                        </div>
+                    </div>
+<!---                                   <div class="form-group">
+                      <label class="col-sm-2 control-label">Email</label>
+                      <div class="col-sm-10">
+                          <input type="Email" class="form-control" name="email" placeholder="Email">
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                          <input type="password" class="form-control" name="password" placeholder="Password">
+                        </div>
+                    </div>
+--->
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Address</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" name="address" placeholder="Address" required="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Phone</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" name="phone" placeholder="Phone No." required="1">
+                        </div>
+                   </div>
+
+                    <div class="form-group">
+                          <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary">Add Nurse</button>
+                          </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+                        </div>
+               </div>
+        </div>
+
+        <!----------------   Add Nurse Ends   --------------->
+        </div>
+        <!----------------   Panel body Ends   --------------->
+    </div>
+<!----------------   Menu Tab Ends   --------------->
+    </div>
+<!---- Content Ares Ends  -------->
+		</div>
+	</div>
+	<script src="{{ url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+    </body>
+</html>

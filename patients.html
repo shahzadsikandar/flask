@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{{ url_for('static', filename='assets/images/logo.png')}}" rel="icon"/>
+        <title>Online Hospital Management System</title>
+        <!-- Bootstrap -->
+        <link href="{{ url_for('static', filename='assets/css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='assets/css/style.css')}}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='assets/js/jquery.js')}}"></script>
+        <script type="{{ url_for('static', filename='assets/text/javascript')}}">
+                $(document).ready(function()
+                {
+
+                        $('#doctorlist').show();
+                        $('.doctor li:first-child a').addClass('active');
+                        $('.doctor li a').click(function(e){
+
+                                var tabDiv=this.hash;
+                                $('.doctor li a').removeClass('active');
+                                $(this).addClass('.active');
+                                $('.switchgroup').hide();
+                                $(tabDiv).fadeIn();
+                                e.preventDefault();
+
+                        });
+
+
+                });
+        </script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            
+        <!--- Header Start -------->
+        <div class="row header">
+
+            <div class="col-md-10">
+                    <h2 >Hospital Mangement System</h2>
+            </div>
+
+            <div class="col-md-2 ">
+                <ul class="nav nav-pills ">
+                    <li class="dropdown dmenu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                            <ul class="dropdown-menu ">
+                                <li><a href="/profile">Change Password</a></li>
+                                <li role="separator" class="divider"></li>
+                                 <li><a href="logout">Logout</a></li>
+                            </ul>
+                     </li>
+                </ul>
+            </div>
+        </div>
+	<!--- Header Ends --------->
+       
+        <div class="row">
+		
+        <!----- Menu Area Start ------>
+        <div class="col-md-2 menucontent">
+          
+            <a href="#"><h1>Dashboard</h1></a>
+                
+                <ul class="nav nav-pills nav-stacked">
+                  <li role="presentation"><a href="/department">Department</a></li>
+                  <li role="presentation"><a href="/doctor">Doctors</a></li>
+                  <li role="presentation"><a href="/patients">Patients</a></li>
+                  <li role="presentation"><a href="/nurse">Nurse</a></li>
+                  <li role="presentation"><a href="/profile">Profile</a></li>
+                </ul>
+        </div>
+        <!---- Menu Ares Ends  -------->
+				<!---- Content Ares Start  -------->
+				<div class="col-md-10 maincontent" >
+			<!----------------   Menu Tab   --------------->
+					
+							<div class="panel panel-default contentinside">
+								<div class="panel-heading">Manage Patient</div>
+								<!----------------   Panel body Start   --------------->
+								<div class="panel-body">
+									<ul class="nav nav-tabs doctor">
+										<li role="presentation"><a href="#doctorlist">Patient List</a></li>
+										<li role="presentation"><a href="#" data-toggle="modal" data-target="#addpatient">Add Patient</a></li>
+									</ul>
+
+							{% with messages = get_flashed_messages() %}
+
+             {% if messages %}
+
+             {% for message in messages %}
+             <div class="alert alert-success alert-dismissable" role="alert">
+
+                <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+             {{message}}
+
+             </div>
+
+
+
+             {%endfor%}
+
+             {%endif%}
+
+             {%endwith%}
+
+						
+										<!----------------   Display Patients Data List Start  --------------->
+										<div id="doctorlist" class="switchgroup">
+											<table class="table table-bordered table-hover">
+												<tr class="active">
+													<td>Patient ID</td>
+													<td>Patient Name</td>
+													<td>Age</td>
+													<td>Sex</td>
+                                                    <td>Blood Group</td>
+													<td>Address</td>
+													<td>Phone No</td>
+													<td>Admit Date</td>
+													<td>Options</td>
+													
+												</tr>
+								{% for pt in pnt %}
+												<tr>
+													<td>{{pt.id}}</td>
+													<td>{{pt.P_Name}}</td>
+													<td>{{pt.Age}}</td>
+													<td>{{pt.Sex}}</td>
+                                                    <td>{{pt.Blood_Group}}</td>
+													<td>{{pt.P_Address}}</td>
+													<td>{{pt.Phone_no}}</td>
+													<td>{{pt.date}}</td>
+													<td>
+														<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Modal{{pt.id}}"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+
+													<a  href="/pdelete/{{pt.id}}" class="btn btn-danger" onclick="return confirm('Are You Sure To Delete ?')" ><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+													</td>
+												</tr>
+												<div class="modal fade" id="Modal{{pt.id}}" tabindex="-1" role="dialog" aria-labelledby="ModalLabel">
+
+													  <div class="modal-dialog" role="document">
+
+                            			                  <div class="modal-content">
+												  <div class="modal-header">
+                                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                  <h4 class="modal-title" id="ModalLabel">Update Patients Information</h4>
+                                              </div>
+											<div class="panel panel-default">
+												<div class="panel-body">
+													<form class="form-horizontal" action="{{url_for('pupdate')}}" method="POST">
+                                                        <div class="form-group">
+															<label  class="col-sm-2 control-label">Patient Id:</label>
+															 <div class="col-sm-10">
+                                                                <input type="number" class="form-control" name="pid" placeholder="unique_id" value="{{pt.id}}" readonly="readonly">
+															</div>
+												        </div>
+														<br><br>
+
+															<div class="form-group">
+															<label  class="col-sm-2 control-label">Name</label>
+															<div class="col-sm-10">
+                                                                <input type="text" class="form-control" name="patientname" placeholder="Name" value="{{pt.P_Name}}">
+															</div>
+												            </div>
+														<br><br>
+			<!--------
+														  <div class="form-group">
+															<label class="col-sm-2 control-label">Email</label>
+															<div class="col-sm-10">
+															  <input type="email" class="form-control" name="email" placeholder="Email">
+															</div>
+														  </div>
+
+														  <div class="form-group">
+															<label class="col-sm-2 control-label">Password</label>
+															<div class="col-sm-10">
+															  <input type="password" class="form-control" name="pwd" placeholder="Password">
+															</div>
+														  </div>
+			------>
+														  <div class="form-group">
+															<label  class="col-sm-2 control-label">Address</label>
+															<div class="col-sm-10">
+															  <input type="text" class="form-control" name="addres" placeholder="Address" value="{{pt.P_Address}}">
+															</div>
+															</div>
+															<br><br>
+
+															 <div class="form-group">
+															<label  class="col-sm-2 control-label">Phone</label>
+															<div class="col-sm-10">
+															  <input type="text" class="form-control" name="phn" placeholder="Phone No." value="{{pt.Phone_no}}">
+															</div>
+															</div>
+														<br><br>
+
+                                                            <div class="form-group">
+                                                                <label class="col-sm-2 control-label">Sex</label>
+                                                                <div class="col-sm-3">
+                                                            <select class="form-control" name="sex">
+																  <option selected hidden>{{pt.Sex}}</option>
+                                                                  <option>Male</option>
+                                                                  <option>Female</option>
+                                                                  </select>
+                                                                    </div>
+															</div>
+														<br><br>
+
+<!--                                                        <div class="form-group">
+															<label  class="col-sm-2 control-label">Admit Date</label>
+															<div class="col-sm-10">
+															  <input type="text" class="form-control" name="adate" placeholder="Admit date">
+															</div>
+															</div>
+    ---->
+                                                        <div class="form-group">
+															<label  class="col-sm-2 control-label">Age</label>
+															<div class="col-sm-10">
+															  <input type="text" class="form-control" name="age" placeholder="Age" value="{{pt.Age}}">
+															</div>
+															</div>
+														<br><br>
+
+														<div class="form-group">
+                                                                <label class="col-sm-2 control-label">Blood Group</label>
+                                                                <div class="col-sm-3">
+                                                            <select class="form-control" name="bdgrp" >
+																 <option selected hidden>{{pt.Blood_Group}}</option>
+                                                                 <option>A<sup>+</sup></option>
+                                                                  <option>A<sup>-</sup></option>
+                                                                <option>B<sup>+</sup></option>
+                                                                <option>B<sup>-</sup></option>
+                                                                <option>AB<sup>+</sup></option>
+                                                                <option>AB<sup>-</sup></option>
+                                                                <option>O<sup>+</sup></option>
+                                                                <option>O<sup>-</sup></option>
+                                                                  </select>
+                                                                    </div>
+                                                            </div>
+
+                                                        <br><br>
+
+
+														  <div class="form-group">
+															<div class="col-sm-offset-2 col-sm-10">
+															  <button type="submit" class="btn btn-primary">Update Patient</button>
+															</div>
+														  </div>
+													</form>
+
+												 </div>
+											</div>
+										</div>
+											  </div>
+											  </div>
+
+								{%endfor%}
+											</table>
+										</div>
+										<!----------------   Display Patient Data List Ends  --------------->
+										<!----------------   Add Patient Start   --------------->
+										 <div class="modal fade" id="addpatient" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+											  <div class="modal-dialog" role="document">
+                                              <div class="modal-content">
+												  <div class="modal-header">
+                                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                  <h4 class="modal-title" id="myModalLabel">Add Patients Information</h4>
+                                              </div>
+											<div class="panel panel-default">
+												<div class="panel-body">
+													<form class="form-horizontal" action="{{url_for('ptadd')}}" method="post">
+                                                        <div class="form-group">
+															<label  class="col-sm-2 control-label">Patient Id:</label>
+															 <div class="col-sm-10">
+                                                                <input type="number" class="form-control" name=pid" placeholder="unique_id" readonly="readonly">
+															</div>
+												        </div>
+                                                                                                            
+															<div class="form-group">
+															<label  class="col-sm-2 control-label">Name</label>
+															<div class="col-sm-10">
+                                                                <input type="text" class="form-control" name="patientname" placeholder="Name" required="1">
+															</div>
+												            </div>
+			<!--------
+														  <div class="form-group">
+															<label class="col-sm-2 control-label">Email</label>
+															<div class="col-sm-10">
+															  <input type="email" class="form-control" name="email" placeholder="Email">
+															</div>
+														  </div>
+														  
+														  <div class="form-group">
+															<label class="col-sm-2 control-label">Password</label>
+															<div class="col-sm-10">
+															  <input type="password" class="form-control" name="pwd" placeholder="Password">
+															</div>
+														  </div>
+			------>
+														  <div class="form-group">
+															<label  class="col-sm-2 control-label">Address</label>
+															<div class="col-sm-10">
+															  <input type="text" class="form-control" name="addres" placeholder="Address" required="1">
+															</div>
+															</div>
+															
+															 <div class="form-group">
+															<label  class="col-sm-2 control-label">Phone</label>
+															<div class="col-sm-10">
+															  <input type="text" class="form-control" name="phn" placeholder="Phone No." required="#">
+															</div>
+															</div>
+                                                            <div class="form-group">    
+                                                                <label class="col-sm-2 control-label">Sex</label>
+                                                                <div class="col-sm-3">
+                                                            <select class="form-control" name="sex">
+                                                                  <option>Male</option>
+                                                                  <option>Female</option>
+                                                                  </select>
+                                                                    </div>
+															</div>
+<!--                                                        <div class="form-group">
+															<label  class="col-sm-2 control-label">Admit Date</label>
+															<div class="col-sm-10">
+															  <input type="text" class="form-control" name="adate" placeholder="Admit date">
+															</div>
+															</div>
+    ---->
+                                                        <div class="form-group">
+															<label  class="col-sm-2 control-label">Age</label>
+															<div class="col-sm-10">
+															  <input type="text" class="form-control" name="age" placeholder="Age">
+															</div>
+															</div>
+                                                        <div class="form-group">    
+                                                                <label class="col-sm-2 control-label">Blood Group</label>
+                                                                <div class="col-sm-3">
+                                                            <select class="form-control" name="bdgrp">
+                                                                  <option>A<sup>+</sup></option>
+                                                                  <option>A<sup>-</sup></option>
+                                                                <option>B<sup>+</sup></option>
+                                                                <option>B<sup>-</sup></option>
+                                                                <option>AB<sup>+</sup></option>
+                                                                <option>AB<sup>-</sup></option>
+                                                                <option>O<sup>+</sup></option>
+                                                                <option>O<sup>-</sup></option>
+                                                                  </select>
+                                                                    </div>
+                                                            </div>
+										
+                                                               
+															
+														 
+														  <div class="form-group">
+															<div class="col-sm-offset-2 col-sm-10">
+															  <button type="submit" class="btn btn-primary">Add Patient</button>
+															</div>
+														  </div>
+													</form>
+												
+												 </div>
+											</div>
+										</div>
+											  </div>
+											  </div>
+										<!----------------   Add Patients Ends   --------------->
+								</div>
+								<!----------------   Panel body Ends   --------------->
+							</div>
+				</div>
+			</div>
+	</div>
+				
+				
+				
+		
+		<script src="{{ url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+	</body>
+</html>

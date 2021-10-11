@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{{ url_for('static', filename='assets/images/logo.png')}}" rel="icon"/>
+        <title>Online Hospital Management System</title>
+        <!-- Bootstrap -->
+        <link href="{{ url_for('static', filename='assets/css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='assets/css/style.css')}}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='assets/js/jquery.js')}}"></script>
+        <script type="{{ url_for('static', filename='assets/text/javascript')}}">
+                $(document).ready(function()
+                {
+
+                        $('#doctorlist').show();
+                        $('.doctor li:first-child a').addClass('active');
+                        $('.doctor li a').click(function(e){
+
+                                var tabDiv=this.hash;
+                                $('.doctor li a').removeClass('active');
+                                $(this).addClass('.active');
+                                $('.switchgroup').hide();
+                                $(tabDiv).fadeIn();
+                                e.preventDefault();
+
+                        });
+
+
+                });
+        </script>
+    </head>
+    <body>
+        <div class="container-fluid">
+
+        <!--- Header Start -------->
+        <div class="row header">
+
+            <div class="col-md-10">
+                    <h2 >Hospital Mangement System</h2>
+            </div>
+
+            <div class="col-md-2 ">
+                <ul class="nav nav-pills ">
+                    <li class="dropdown dmenu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                            <ul class="dropdown-menu ">
+                                <li><a href="/profile">Change Password</a></li>
+                                <li role="separator" class="divider"></li>
+                                 <li><a href="logout">Logout</a></li>
+                            </ul>
+                     </li>
+                </ul>
+            </div>
+        </div>
+	<!--- Header Ends --------->
+
+        <div class="row">
+
+        <!----- Menu Area Start ------>
+        <div class="col-md-2 menucontent">
+
+            <a href="#"><h1>Dashboard</h1></a>
+
+                <ul class="nav nav-pills nav-stacked">
+                  <li role="presentation"><a href="/department">Department</a></li>
+                  <li role="presentation"><a href="/doctor">Doctors</a></li>
+                  <li role="presentation"><a href="/patients">Patients</a></li>
+                  <li role="presentation"><a href="/nurse">Nurse</a></li>
+                  <li role="presentation"><a href="/profile">Profile</a></li>
+                </ul>
+        </div>
+        <!---- Menu Ares Ends  -------->
+<!---- Content Ares Start  -------->
+    <div class="col-md-10 maincontent" >
+    <!----------------   Menu Tab   --------------->
+        <div class="panel panel-default contentinside">
+                <div class="panel-heading">Manage Doctor</div>
+                <!----------------   Panel body Start   --------------->
+                <div class="panel-body">
+                        <ul class="nav nav-tabs doctor">
+                                <li role="presentation"><a href="#doctorlist">Doctor List</a></li>
+                                <li role="presentation"><a href="#" data-toggle="modal" data-target="#addDoctor">Add Doctor</a></li>
+                        </ul>
+
+                       {% with messages = get_flashed_messages() %}
+
+             {% if messages %}
+
+             {% for message in messages %}
+             <div class="alert alert-success alert-dismissable" role="alert">
+
+                <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+             {{message}}
+
+             </div>
+
+
+
+             {%endfor%}
+
+             {%endif%}
+
+             {%endwith%}
+
+
+
+    <!----------------   Display Doctor Data List Start  --------------->
+
+        <div id="doctorlist" class="switchgroup">
+        <table class="table table-bordered table-hover">
+                <tr class="active">
+                        <td>Doctor ID</td>
+                        <td>Doctor Name</td>
+                        <td>Department</td>
+                        <td>Address</td>
+                        <td>Phone No.</td>
+                        <td>Options</td>
+                </tr>
+
+                {% for dc in doc  %}
+                    <tr>
+                            <td>{{dc.id}}</td>
+                            <td>{{dc.doctor_name}}</td>
+                            <td>{{dc.depart_name}}</td>
+                            <td>{{dc.address}}</td>
+                            <td>{{dc.phon_no}}</td>
+                            <td>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Modal{{dc.id}}" ><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+                            <a  href="/docdelete/{{dc.id}}" class="btn btn-danger" onclick="return confirm('Are You Sure To Delete ?')" ><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                            </td>
+                    </tr>
+
+
+        </div>
+    <!----------------   Display Doctor Data List Ends  --------------->
+
+    <!------ Doctor Edit Info Modal Start Here ---------->
+
+
+              <div class="modal fade" id="Modal{{dc.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+
+                        <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Edit Doctor Information</h4>
+                        </div>
+
+                        <div class="modal-body">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                             <form class="form-horizontal" action="{{url_for('doctrupdate')}}" method="post">
+                                <div class="form-group">
+                                <label  class="col-sm-3 control-label">Doctor Id:</label>
+                                <div class="col-sm-8">
+                                    <input type="number" class="form-control" name="doctid" placeholder="Doctor ID" value="{{dc.id}}" readonly="readonly">
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label  class="col-sm-3 control-label">Name</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="doctname" placeholder="Name" value="{{dc.doctor_name}}">
+                                </div>
+                                </div>
+                                 <br><br>
+<!--
+                                <div class="form-group">
+                                      <label class="col-sm-2 control-label">Email</label>
+                                      <div class="col-sm-10">
+                                          <input type="email" class="form-control" name="email" placeholder="Email" >
+                                      </div>
+                                </div>
+
+                    <div class="form-group">
+                          <label class="col-sm-2 control-label">Password</label>
+                          <div class="col-sm-10">
+                            <input type="password" class="form-control" name="pwd" placeholder="Password" >
+                          </div>
+                    </div>
+-->
+                    <div class="form-group">
+                        <label  class="col-sm-3 control-label">Address</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" name="add" placeholder="Address" value="{{dc.address}}">
+                        </div>
+                    </div>
+                                 <br><br>
+
+                     <div class="form-group">
+                        <label  class="col-sm-3 control-label">Phone</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" name="phon" placeholder="Phone No." value="{{dc.phon_no}}">
+                        </div>
+                    </div>
+                                 <br>
+
+
+                    <div class="form-group">
+                        <label  class="col-sm-3 control-label">Department</label>
+                        <div class="col-sm-8">
+
+                        <select class="form-control" name="dept">
+                            <option>{{dc.depart_name}}</option>
+                            {% for dep in department %}
+                            <option>{{dep.d_name}}</option>
+                            {%endfor%}
+
+
+
+                        </select>
+                        </div>
+                    </div>
+                                 <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" value="Update">Update</button>
+                                 </div>
+                            </form>
+                             </div>
+                         </div>
+                         </div>
+                    </div>
+                 </div>
+               </div>
+                        {%endfor%}
+        </table>
+<!----------------   Modal ends here  --------------->
+
+
+     <!------ Doctor add Info Modal Start Here ---------->
+
+
+              <div class="modal fade" id="addDoctor" tabindex="-1" role="dialog" aria-labelledby="ModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+
+                        <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="ModalLabel">Add Doctor Information</h4>
+                        </div>
+
+                        <div class="modal-body">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                             <form class="form-horizontal" action="{{url_for('docadd')}}" method="post">
+                                <div class="form-group">
+                                <label  class="col-sm-2 control-label">Doctor Id:</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" name="doctid" placeholder="Doctor ID" value="" readonly="readonly">
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label  class="col-sm-2 control-label">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="doctname" placeholder="Name" required="1" >
+                                </div>
+                                </div>
+<!--
+                                <div class="form-group">
+                                      <label class="col-sm-2 control-label">Email</label>
+                                      <div class="col-sm-10">
+                                          <input type="email" class="form-control" name="email" placeholder="Email" >
+                                      </div>
+                                </div>
+
+                    <div class="form-group">
+                          <label class="col-sm-2 control-label">Password</label>
+                          <div class="col-sm-10">
+                            <input type="password" class="form-control" name="pwd" placeholder="Password" >
+                          </div>
+                    </div>
+-->
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Address</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" name="add" placeholder="Address" required="1" >
+                        </div>
+                    </div>
+
+                     <div class="form-group">
+                        <label  class="col-sm-2 control-label">Phone</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" name="phon" placeholder="Phone No." required="#" >
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">Department</label>
+                        <div class="col-sm-10">
+
+                        <select class="form-control" name="dept">
+                            <option value="Null">Department</option>
+                            {% for dep in department %}
+                            <option>{{dep.d_name}}</option>
+
+                            {%endfor%}
+                        </select>
+                        </div>
+                    </div>
+                                 <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" value="Update">ADD</button>
+                                 </div>
+                            </form>
+                             </div>
+                         </div>
+                         </div>
+                    </div>
+                 </div>
+               </div>
+                           <!----------------   Add Doctor Ends   --------------->
+                </div>
+           <!----------------   Panel body Ends   --------------->
+         </div>
+    </div>
+	</div>
+</div>
+	<script src="{{ url_for('static', filename='assets/js/bootstrap.min.js')}}"></script>
+	</body>
+</html>
